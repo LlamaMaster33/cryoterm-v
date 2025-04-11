@@ -6,6 +6,14 @@ export const listReports = () => {
       "- report003: Security Breach Summary"
     ];
   };
+  export const listDossier = () => {
+    return [
+      ">>> Available Dossier:",
+      "- report001: Incident Analysis",
+      "- report002: System Diagnostics",
+      "- report003: Security Breach Summary"
+    ];
+  };
   
   export const openReport = (reportId) => {
     const reports = {

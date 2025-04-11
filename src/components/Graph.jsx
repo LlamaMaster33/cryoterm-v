@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { Network } from "vis-network/standalone";
 
 const nodes = [
-  { id: "Ghostpaw - Central Archive", label: "Ghostpaw - Central Archive" },
+  { id: "Site ϴ-7 - Central Archive", label: "Site ϴ-7 - Central Archive" },
   { id: "CHARACTER DOSSIERS", label: "CHARACTER DOSSIERS" },
   { id: "Operative Ghostpaw (Primary File)", label: "Operative Ghostpaw (Primary File)" },
   { id: "Commander Ezra", label: "Commander Ezra" },
@@ -22,15 +22,15 @@ const nodes = [
 ];
 
 const edges = [
-  { from: "Ghostpaw - Central Archive", to: "CHARACTER DOSSIERS" },
-  { from: "Ghostpaw - Central Archive", to: "Unit Frostbound Strikers" },
-  { from: "Ghostpaw - Central Archive", to: "ENEMY INTEL" },
-  { from: "Ghostpaw - Central Archive", to: "MISSION LOGS" },
-  { from: "Ghostpaw - Central Archive", to: "CULTURAL + RELIGIOUS" },
-  { from: "Ghostpaw - Central Archive", to: "VOICE LOG ARCHIVE" },
-  { from: "Ghostpaw - Central Archive", to: "BASE Cryo-Station Theta-V" },
-  { from: "Ghostpaw - Central Archive", to: "VOID STUDIES" },
-  { from: "Ghostpaw - Central Archive", to: "MISC" },
+  { from: "Site ϴ-7 - Central Archive", to: "CHARACTER DOSSIERS" },
+  { from: "Site ϴ-7 - Central Archive", to: "Unit Frostbound Strikers" },
+  { from: "Site ϴ-7 - Central Archive", to: "ENEMY INTEL" },
+  { from: "Site ϴ-7 - Central Archive", to: "MISSION LOGS" },
+  { from: "Site ϴ-7 - Central Archive", to: "CULTURAL + RELIGIOUS" },
+  { from: "Site ϴ-7 - Central Archive", to: "VOICE LOG ARCHIVE" },
+  { from: "Site ϴ-7 - Central Archive", to: "BASE Cryo-Station Theta-V" },
+  { from: "Site ϴ-7 - Central Archive", to: "VOID STUDIES" },
+  { from: "Site ϴ-7 - Central Archive", to: "MISC" },
   { from: "CHARACTER DOSSIERS", to: "Operative Ghostpaw (Primary File)" },
   { from: "CHARACTER DOSSIERS", to: "Commander Ezra" },
   { from: "Operative Ghostpaw (Primary File)", to: "Void Manifestation" },

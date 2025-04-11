@@ -69,7 +69,7 @@ button:focus-visible {
 }
 
 .crt {
-  overflow-y: clip;
+  overflow-y: auto;
   scrollbar-width: none;  /* Firefox */
   -ms-overflow-style: none;  /* Internet Explorer */
 }

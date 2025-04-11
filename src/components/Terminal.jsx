@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { listReports, openReport } from "../commands/ReportCommands";
+import { useState, useEffect, useRef } from "react";
+import { listReports, listDossier, openReport } from "../commands/ReportCommands";
 import Graph from './Graph';
 import startupSound from "../assets/bootup.mp3";
-import "../Index.css";
+import "../index.css";
 
 const bootLines = [
   "CryoTerm-V [113th-C.L. - Clearance Level BLUE]",
@@ -46,7 +46,17 @@ export default function Terminal() {
   const [loginStage, setLoginStage] = useState(null);
   const [tempUser, setTempUser] = useState("");
   const [graphVisible, setGraphVisible] = useState(false); // New state for graph visibility
+  const terminalRef = useRef(null); // Ref for terminal div
 
+  useEffect(() => {
+    if (terminalRef.current) {
+      terminalRef.current.scrollTo({
+        top: terminalRef.current.scrollHeight,
+        behavior: 'smooth', // Smooth scrolling animation
+      });
+    }
+  }, [output]); // Trigger auto-scroll whenever `output` changes
+  
   useEffect(() => {
     const audio = new Audio(startupSound);
     audio.volume = 0.3;
@@ -115,12 +125,22 @@ export default function Terminal() {
         newLines.push(">>> Type 'login' to begin authentication.");
       } else {
         switch (lower) {
-          case "help":
-            newLines.push("Available Commands:");
-            newLines.push("- list reports");
-            newLines.push("- list documents");
-            newLines.push("- graph");
-            newLines.push("- logout");
+            case "help":
+            newLines.push("> Available Commands:");
+            newLines.push("  - get reports");
+            newLines.push("  - list dossiers");
+            newLines.push("  - nav folder [folder name]");
+            newLines.push("  - open dossier [report ID]");
+            newLines.push("  - graph");
+            newLines.push("  - logout");
+            break;
+          case "list reports":
+            newLines.push("Pulling Reports...");
+            newLines.push(...listReports());
+            break;
+          case "list dossiers":
+            newLines.push("Pulling Dossier...");
+            newLines.push(...listDossier());
             break;
           default:
             newLines.push(`> ${cmd}`);
