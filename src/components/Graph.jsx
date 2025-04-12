@@ -1,43 +1,53 @@
+// GraphView.jsx
 import React, { useEffect, useRef } from "react";
 import { Network } from "vis-network/standalone";
 
 const nodes = [
-  { id: "Site ϴ-7 - Central Archive", label: "Site ϴ-7 - Central Archive" },
-  { id: "CHARACTER DOSSIERS", label: "CHARACTER DOSSIERS" },
+  { id: "Ghostpaw - Central Archive", label: "Ghostpaw - Central Archive" },
+  { id: "Cryo-Chamber Grid", label: "Cryo-Chamber Grid" },
   { id: "Operative Ghostpaw (Primary File)", label: "Operative Ghostpaw (Primary File)" },
   { id: "Commander Ezra", label: "Commander Ezra" },
-  { id: "Void Manifestation", label: "Void Manifestation" },
   { id: "Dossier Compilation", label: "Dossier Compilation" },
   { id: "Squad Integration", label: "Squad Integration" },
   { id: "Psychological Profile", label: "Psychological Profile" },
   { id: "Training & Enlistment", label: "Training & Enlistment" },
-  { id: "ENEMY INTEL", label: "ENEMY INTEL" },
-  { id: "MISSION LOGS", label: "MISSION LOGS" },
-  { id: "MISC", label: "MISC" },
   { id: "Unit Frostbound Strikers", label: "Unit Frostbound Strikers" },
   { id: "CULTURAL + RELIGIOUS", label: "CULTURAL + RELIGIOUS" },
+  { id: "MISSION LOGS", label: "MISSION LOGS" },
   { id: "VOICE LOG ARCHIVE", label: "VOICE LOG ARCHIVE" },
   { id: "BASE Cryo-Station Theta-V", label: "BASE Cryo-Station Theta-V" },
-  { id: "VOID STUDIES", label: "VOID STUDIES" }
+  // Echo Signal Frequencies (secret access)
+  { id: "Frequency 128.3", label: "Frequency 128.3", x: 1000, y: -250 },
+  { id: "Frequency 113.7", label: "Frequency 113.7", x: 1000, y: -100 },
+  { id: "Frequency Void.Ø", label: "Frequency Void.Ø", x: 1000, y: 0 },
+  { id: "Frequency 666.0", label: "Frequency 666.0", x: 1000, y: 100 },
+  // Hidden Files
+  { id: "ENEMY INTEL", label: "ENEMY INTEL", x: 1100, y: -100 },
+  { id: "VOID STUDIES", label: "VOID STUDIES", x: 1100, y: 0 },
+  { id: "Void Manifestation", label: "Void Manifestation", x: 1100, y: 50 },
+  { id: "Specimen S13", label: "Specimen S13", x: 1100, y: 100 }
 ];
 
 const edges = [
-  { from: "Site ϴ-7 - Central Archive", to: "CHARACTER DOSSIERS" },
-  { from: "Site ϴ-7 - Central Archive", to: "Unit Frostbound Strikers" },
-  { from: "Site ϴ-7 - Central Archive", to: "ENEMY INTEL" },
-  { from: "Site ϴ-7 - Central Archive", to: "MISSION LOGS" },
-  { from: "Site ϴ-7 - Central Archive", to: "CULTURAL + RELIGIOUS" },
-  { from: "Site ϴ-7 - Central Archive", to: "VOICE LOG ARCHIVE" },
-  { from: "Site ϴ-7 - Central Archive", to: "BASE Cryo-Station Theta-V" },
-  { from: "Site ϴ-7 - Central Archive", to: "VOID STUDIES" },
-  { from: "Site ϴ-7 - Central Archive", to: "MISC" },
-  { from: "CHARACTER DOSSIERS", to: "Operative Ghostpaw (Primary File)" },
-  { from: "CHARACTER DOSSIERS", to: "Commander Ezra" },
-  { from: "Operative Ghostpaw (Primary File)", to: "Void Manifestation" },
-  { from: "Operative Ghostpaw (Primary File)", to: "Dossier Compilation" },
+  { from: "Ghostpaw - Central Archive", to: "Cryo-Chamber Grid" },
+  { from: "Ghostpaw - Central Archive", to: "Dossier Compilation" },
+  { from: "Ghostpaw - Central Archive", to: "VOICE LOG ARCHIVE" },
+  { from: "Ghostpaw - Central Archive", to: "Echo Signal Array" },
+  // Primary dossier structure
+  { from: "Dossier Compilation", to: "Operative Ghostpaw (Primary File)" },
+  { from: "Dossier Compilation", to: "Commander Ezra" },
   { from: "Dossier Compilation", to: "Training & Enlistment" },
   { from: "Dossier Compilation", to: "Psychological Profile" },
-  { from: "Dossier Compilation", to: "Squad Integration" }
+  { from: "Dossier Compilation", to: "Squad Integration" },
+  { from: "Cryo-Chamber Grid", to: "Unit Frostbound Strikers" },
+  { from: "Cryo-Chamber Grid", to: "CULTURAL + RELIGIOUS" },
+  { from: "Cryo-Chamber Grid", to: "MISSION LOGS" },
+  { from: "Cryo-Chamber Grid", to: "BASE Cryo-Station Theta-V" },
+  // Secret signals
+  { from: "Frequency 113.7", to: "ENEMY INTEL" },
+  { from: "Frequency Void.Ø", to: "VOID STUDIES" },
+  { from: "Frequency Void.Ø", to: "Void Manifestation" },
+  { from: "Frequency 666.0", to: "Specimen S13" }
 ];
 
 export default function GraphView({ onNodeClick }) {

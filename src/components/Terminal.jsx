@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { listReports, listDossier, openReport } from "../commands/ReportCommands";
+import { frequencyNodes, frequencyResponses } from "../commands/FrequencyResponses";
+import { dossierNodes, dossierResponses } from "../commands/DossierResponses";
 import Graph from './Graph';
 import startupSound from "../assets/bootup.mp3";
 import "../index.css";
@@ -26,17 +27,21 @@ const loginCredentials = {
   "1": "1",
 };
 
-const graph = {
-  nodes: [
-    { id: 'entry1', title: 'Entry 1', description: 'Details about Entry 1' },
-    { id: 'entry2', title: 'Entry 2', description: 'Details about Entry 2' },
-    { id: 'entry3', title: 'Entry 3', description: 'Details about Entry 3' }
-  ],
-  edges: [
-    { from: 'entry1', to: 'entry2' },
-    { from: 'entry2', to: 'entry3' }
-  ]
-};
+const baseNodes = [
+  { id: "Ghostpaw - Central Archive", label: "Ghostpaw - Central Archive" },
+  { id: "Cryo-Chamber Grid", label: "Cryo-Chamber Grid" },
+  { id: "Operative Ghostpaw (Primary File)", label: "Operative Ghostpaw (Primary File)" },
+  { id: "Commander Ezra", label: "Commander Ezra" },
+  { id: "Dossier Compilation", label: "Dossier Compilation" }, // New folder
+  { id: "VOICE LOG ARCHIVE", label: "VOICE LOG ARCHIVE" } // New folder
+];
+
+const edges = [
+  { from: "Ghostpaw - Central Archive", to: "Cryo-Chamber Grid" },
+  { from: "Ghostpaw - Central Archive", to: "Dossier Compilation" },
+  { from: "Dossier Compilation", to: "Operative Ghostpaw (Primary File)" },
+  { from: "Dossier Compilation", to: "Commander Ezra" }
+];
 
 export default function Terminal() {
   const [output, setOutput] = useState([]);
@@ -46,7 +51,16 @@ export default function Terminal() {
   const [loginStage, setLoginStage] = useState(null);
   const [tempUser, setTempUser] = useState("");
   const [graphVisible, setGraphVisible] = useState(false); // New state for graph visibility
+  const [discoveredFrequencies, setDiscoveredFrequencies] = useState([]); // Track scanned frequencies
+  const [openFolder, setOpenFolder] = useState(null); // Track the currently open folder
+  
   const terminalRef = useRef(null); // Ref for terminal div
+
+  const nodes = [
+    ...baseNodes,
+    ...discoveredFrequencies.map((freq) => frequencyNodes[freq]),
+    ...Object.values(dossierNodes) // Include dossier nodes in the graph
+  ];
 
   useEffect(() => {
     if (terminalRef.current) {
@@ -117,30 +131,67 @@ export default function Terminal() {
       setOutput([...output, ...newLines]);
       return;
     } else if (loginStage === "loggedIn") {
-      if (lower === "logout") {
+      if (lower.startsWith("folder")) {
+        const folderName = cmd.split(" ").slice(1).join(" ").trim(); // Extract folder name
+        const validFolders = ["Cryo-Chamber Grid", "Dossier Compilation", "VOICE LOG ARCHIVE"];
+        const matchedFolder = validFolders.find((folder) => folder.toLowerCase() === folderName.toLowerCase());
+      
+        if (matchedFolder) {
+          setOpenFolder(matchedFolder);
+          console.log(`Folder opened: ${matchedFolder}`); // Debug log
+          newLines.push(`>>> Folder '${matchedFolder}' opened.`);
+        } else {
+          console.log(`Folder not found: ${folderName}`); // Debug log
+          newLines.push(`>>> Folder '${folderName}' not found.`);
+        }
+      } else if (lower.startsWith("dossier")) {
+        const parts = cmd.split(" ");
+        const dossierName = parts.length > 1 ? parts.slice(1).join(" ").trim() : null; // Extract dossier name
+        console.log(`Extracted dossier name: ${dossierName}`); // Debug log
+        console.log(`Current open folder: ${openFolder}`); // Debug log
+      
+        // Find the dossier in a case-insensitive manner
+        const matchedDossier = Object.keys(dossierNodes).find(
+          (key) => key.toLowerCase() === dossierName.toLowerCase()
+        );
+      
+        if (matchedDossier) {
+          const dossier = dossierNodes[matchedDossier];
+          if (openFolder === dossier.folder) {
+            newLines.push(...(dossierResponses[matchedDossier] || [`>>> Dossier '${dossierName}' not found.`]));
+          } else {
+            newLines.push(`>>> You must open the '${dossier.folder}' folder to access this dossier.`);
+          }
+        } else {
+          newLines.push(`>>> Dossier '${dossierName}' not found.`);
+        }
+      } else if (lower.startsWith("scan")) {
+          const frequency = lower.split(" ")[1];
+          if (frequencyNodes[frequency] && !discoveredFrequencies.includes(frequency)) {
+            setDiscoveredFrequencies((prev) => [...prev, frequency]);
+            newLines.push(...(frequencyResponses[frequency] || [`>>> Frequency ${frequency} not found.`]));
+          } else if (discoveredFrequencies.includes(frequency)) {
+            newLines.push(`>>> Frequency ${frequency} already scanned.`);
+          } else {
+            newLines.push(`>>> Frequency ${frequency} not found.`);
+          }
+      } else if (lower === "logout") {
         newLines.push(">>> Logging out...");
         setLoginStage(null);
         setInput("");
         newLines.push(">>> Authentication reset.");
         newLines.push(">>> Type 'login' to begin authentication.");
+      } else if (lower === "graph") { // Handle the graph command here
+        setGraphVisible((prevState) => !prevState); // Toggle graph visibility
+        newLines.push(">>> Toggling graph view...");
       } else {
         switch (lower) {
-            case "help":
-            newLines.push("> Available Commands:");
-            newLines.push("  - get reports");
-            newLines.push("  - list dossiers");
-            newLines.push("  - nav folder [folder name]");
-            newLines.push("  - open dossier [report ID]");
-            newLines.push("  - graph");
-            newLines.push("  - logout");
-            break;
-          case "list reports":
-            newLines.push("Pulling Reports...");
-            newLines.push(...listReports());
-            break;
-          case "list dossiers":
-            newLines.push("Pulling Dossier...");
-            newLines.push(...listDossier());
+          case "help":
+            newLines.push("Available Commands:");
+            newLines.push("- folder <folder name>");
+            newLines.push("- dossier <dossier name>");
+            newLines.push("- graph");
+            newLines.push("- logout");
             break;
           default:
             newLines.push(`> ${cmd}`);
@@ -164,29 +215,12 @@ export default function Terminal() {
           newLines.push(">>> Authenticate first.");
         } else {
           newLines.push("Available Commands:");
-          newLines.push("- list reports");
-          newLines.push("- list documents");
+          newLines.push("- folder <folder name>");
+          newLines.push("- dossier <dossier name>");
           newLines.push("- graph");
           newLines.push("- logout");
         }
         break;
-       case "list reports":
-          if (loginStage !== "loggedIn") {
-            newLines.push(">>> Authenticate first.");
-          } else {
-            newLines.push(...listReports());
-          }
-          break;
-        case "open documents":
-            if (loginStage !== "loggedIn") {
-                newLines.push(">>> Authenticate first.");
-            } else {
-                const reportId = cmd.split(" ")[2]; // Extract report ID from command
-                newLines.push(`>>> Opening report ${reportId}...`);
-                // Call the function to open the report
-                newLines.push(...openReport(reportId));
-            }
-            break;
       default:
         newLines.push(`> ${cmd}`);
         newLines.push("Unknown command.");
@@ -196,10 +230,11 @@ export default function Terminal() {
   };
 
   return (
-    <div className="crt" style={{ backgroundColor: "black"}}>
+    <div className="crt" style={{ backgroundColor: "black" }}>
       {output.map((line, i) => (
         <div key={i}>{line}</div>
       ))}
+      {graphVisible && <Graph nodes={nodes} edges={edges} />}
       {bootComplete && (
         <div style={{ display: "flex", alignItems: "center", backgroundColor: "black" }}>
           <span>
@@ -214,19 +249,18 @@ export default function Terminal() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleInput}
             style={{
-              background: "black",
-              backgroundColor: "black",
+              background: "transparent", // Make the background transparent
               border: "none",
               outline: "none",
               color: "#7FE8FA",
               fontFamily: "VT323, monospace",
               fontSize: "18px",
+              caretColor: "#7FE8FA", // Ensure the caret matches the glowing text
               flex: 1,
             }}
           />
         </div>
       )}
-      {graphVisible && <Graph nodes={graph.nodes} edges={graph.edges} />} {/* Render Graph */}
     </div>
   );
 }
