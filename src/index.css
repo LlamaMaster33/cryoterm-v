@@ -23,11 +23,13 @@ a:hover {
 }
 
 body {
+  background-size: cover; /* Ensure the image covers the entire viewport */
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+}
+
+.crt-plastic {
+  background: #0f0f1a no-repeat center center;
+  background-size: cover; /* Ensure the image covers the entire container */
 }
 
 h1 {
@@ -55,7 +57,7 @@ button:focus-visible {
 }
 
 .crt {
-  background: black;
+  background: black; /* Keep the CRT container's background black */
   color: #7FE8FA;
   font-family: 'VT323', monospace;
   font-size: 18px;
@@ -63,13 +65,18 @@ button:focus-visible {
   height: 100vh;
   width: 100vw;
   overflow: hidden; /* Prevent scrollbars */
-  white-space: pre-wrap;
+  white-space: pre-wrap; /* Ensure text wraps to the next line */
+  word-wrap: break-word; /* Break long words to prevent overflow */
+  overflow-wrap: break-word; /* Ensure text wraps properly */
   position: relative;
   text-shadow: 0 0 5px #7FE8FA, 0 0 10px #7FE8FA, 0 0 20px #7FE8FA;
   animation: flicker 0.15s infinite alternate;
   border-radius: 15px; /* Simulate curved screen */
   box-shadow: inset 0 0 50px rgba(0, 255, 255, 0.1), 0 0 30px rgba(0, 255, 255, 0.5);
   box-sizing: border-box; /* Include padding and borders in width/height */
+  max-width: 90%; /* Constrain the text area to 90% of the container width */
+  max-height: 90%; /* Constrain the text area to 90% of the container height */
+  margin: 0 auto; /* Center the text area horizontally */
 }
 
 .crt {
@@ -94,16 +101,33 @@ body {
 
 .crt::before {
   content: "";
-  pointer-events: none;
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.05) 0px,
-    rgba(0, 0, 0, 0.05) 1px,
-    transparent 1px,
-    transparent 2px
-  );
-  z-index: 2;
+  background-size: cover; /* Ensure the image covers the entire container */
+  z-index: 1; /* Place it behind the CRT effects */
+}
+
+.crt::after {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+  z-index: 2; /* Place it above the background image */
+  animation: crt-flicker 0.2s infinite; /* Add flicker effect */
+  pointer-events: none; /* Prevent interaction */
+}
+
+@keyframes crt-flicker {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.95; /* Simulate flicker by reducing opacity */
+  }
 }

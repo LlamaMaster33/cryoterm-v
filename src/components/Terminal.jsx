@@ -1,12 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { frequencyNodes, frequencyResponses } from "../commands/FrequencyResponses";
 import { dossierNodes, dossierResponses } from "../commands/DossierResponses";
+import { helpResponses } from "../commands/MiscCommands";
 import Graph from './Graph';
 import startupSound from "../assets/bootup.mp3";
+import shutdownSound from "../assets/shutdown.mp3";
 import "../index.css";
 
 const bootLines = [
-  "CryoTerm-V [113th-C.L. - Clearance Level BLUE]",
+  "(C) 2043 CryoTerm-V [113th-C.L. - Clearance Level BLUE]",
   "Initializing system...",
   "Loading OS Kernel: █▒▒▒▒▒▒▒▒▒ 5%",
   "Loading OS Kernel: ██▒▒▒▒▒▒▒▒ 15%",
@@ -18,6 +20,13 @@ const bootLines = [
   "Mounting Data Volume: ██████████ 100%",
   "Boot check complete.",
   "System integrity: OK",
+  ">>> Type 'login' to begin authentication."
+];
+
+const logoutLines = [
+  "(C) 2043 CryoTerm-V",
+  ">>> Logging out...",
+  ">>> Authentication reset.",
   ">>> Type 'login' to begin authentication."
 ];
 
@@ -33,7 +42,8 @@ const baseNodes = [
   { id: "Operative Ghostpaw (Primary File)", label: "Operative Ghostpaw (Primary File)" },
   { id: "Commander Ezra", label: "Commander Ezra" },
   { id: "Dossier Compilation", label: "Dossier Compilation" }, // New folder
-  { id: "VOICE LOG ARCHIVE", label: "VOICE LOG ARCHIVE" } // New folder
+  { id: "VOICE LOG ARCHIVE", label: "VOICE LOG ARCHIVE" }, // New folder
+  { id: "Frequency 666.0", label: "Frequency 666.0" }, // New folder
 ];
 
 const edges = [
@@ -53,6 +63,9 @@ export default function Terminal() {
   const [graphVisible, setGraphVisible] = useState(false); // New state for graph visibility
   const [discoveredFrequencies, setDiscoveredFrequencies] = useState([]); // Track scanned frequencies
   const [openFolder, setOpenFolder] = useState(null); // Track the currently open folder
+  const [scannedFolders, setScannedFolders] = useState([]); // Track scanned folders
+  const inputRef = useRef(null); // Create a ref for the input field
+
   
   const terminalRef = useRef(null); // Ref for terminal div
 
@@ -75,7 +88,9 @@ export default function Terminal() {
     const audio = new Audio(startupSound);
     audio.volume = 0.3;
     audio.play();
+  }, []); // Play sound on component mount
 
+  useEffect(() => {
     const interval = setInterval(() => {
       if (bootIndex < bootLines.length) {
         setOutput((prev) => [...prev, bootLines[bootIndex]]);
@@ -84,7 +99,7 @@ export default function Terminal() {
         setBootComplete(true);
         clearInterval(interval);
       }
-    }, 4); // 400ms per line = ~3 seconds boot
+    }, 400); // 400ms per line = ~3 seconds boot
     return () => clearInterval(interval);
   }, [bootIndex]);
 
@@ -100,6 +115,12 @@ export default function Terminal() {
       }
 
       setInput(""); // Clear input field
+    }
+  };
+
+  const handleTerminalClick = () => {
+    if (inputRef.current) {
+      inputRef.current.focus(); // Progr  ammatically focus the input field
     }
   };
 
@@ -133,13 +154,38 @@ export default function Terminal() {
     } else if (loginStage === "loggedIn") {
       if (lower.startsWith("folder")) {
         const folderName = cmd.split(" ").slice(1).join(" ").trim(); // Extract folder name
-        const validFolders = ["Cryo-Chamber Grid", "Dossier Compilation", "VOICE LOG ARCHIVE"];
+        const scannedRequiredFolders = [
+          "Frequency 128.3",
+          "Frequency 147.9",
+          "Frequency 666.0",
+          "Frequency Void.Null"
+        ]; // Folders that require scanning
+        const nonScannedFolders = [
+          "Cryo-Chamber Grid",
+          "Dossier Compilation",
+          "VOICE LOG ARCHIVE"
+        ]; // Folders that don't require scanning
+      
+        const validFolders = [...scannedRequiredFolders, ...nonScannedFolders]; // Combine all valid folders
+        console.log(`Extracted folder name: ${folderName}`); // Debug log
         const matchedFolder = validFolders.find((folder) => folder.toLowerCase() === folderName.toLowerCase());
       
         if (matchedFolder) {
-          setOpenFolder(matchedFolder);
-          console.log(`Folder opened: ${matchedFolder}`); // Debug log
-          newLines.push(`>>> Folder '${matchedFolder}' opened.`);
+          if (scannedRequiredFolders.includes(matchedFolder)) {
+            // Check if the folder requires scanning
+            if (scannedFolders.includes(matchedFolder)) {
+              setOpenFolder(matchedFolder);
+              console.log(`Folder opened: ${matchedFolder}`); // Debug log
+              newLines.push(`>>> Folder '${matchedFolder}' opened.`);
+            } else {
+              newLines.push(`>>> You must scan the corresponding frequency to access '${matchedFolder}'.`);
+            }
+          } else {
+            // Non-scanned folders can be opened directly
+            setOpenFolder(matchedFolder);
+            console.log(`Folder opened: ${matchedFolder}`); // Debug log
+            newLines.push(`>>> Folder '${matchedFolder}' opened.`);
+          }
         } else {
           console.log(`Folder not found: ${folderName}`); // Debug log
           newLines.push(`>>> Folder '${folderName}' not found.`);
@@ -166,33 +212,45 @@ export default function Terminal() {
           newLines.push(`>>> Dossier '${dossierName}' not found.`);
         }
       } else if (lower.startsWith("scan")) {
-          const frequency = lower.split(" ")[1];
-          if (frequencyNodes[frequency] && !discoveredFrequencies.includes(frequency)) {
-            setDiscoveredFrequencies((prev) => [...prev, frequency]);
-            newLines.push(...(frequencyResponses[frequency] || [`>>> Frequency ${frequency} not found.`]));
-          } else if (discoveredFrequencies.includes(frequency)) {
-            newLines.push(`>>> Frequency ${frequency} already scanned.`);
-          } else {
-            newLines.push(`>>> Frequency ${frequency} not found.`);
-          }
+        const frequency = lower.split(" ")[1];
+        console.log(`Scanning frequency: ${frequency}`); // Debug log
+        if (frequencyNodes[frequency] && !discoveredFrequencies.includes(frequency)) {
+          setDiscoveredFrequencies((prev) => [...prev, frequency]);
+          setScannedFolders((prev) => [...prev, `Frequency ${frequency}`]); // Mark folder as scanned
+          newLines.push(...(frequencyResponses[frequency] || [`>>> Frequency ${frequency} not found.`]));
+        } else if (discoveredFrequencies.includes(frequency)) {
+          newLines.push(`>>> Frequency ${frequency} already scanned.`);
+        } else {
+          newLines.push(`>>> Frequency ${frequency} not found.`);
+        }
       } else if (lower === "logout") {
-        newLines.push(">>> Logging out...");
-        setLoginStage(null);
-        setInput("");
-        newLines.push(">>> Authentication reset.");
-        newLines.push(">>> Type 'login' to begin authentication.");
+        const audio = new Audio(shutdownSound); // Create a new Audio instance
+        audio.volume = 0.3; // Set the volume (optional)
+        audio.play(); // Play the logout sound
+
+          let logoutIndex = -1;
+
+        const interval = setInterval(() => {
+          if (logoutIndex < logoutLines.length) {
+            setOutput((prev) => [...prev, logoutLines[logoutIndex]]);
+            logoutIndex++;
+          } else {
+            clearInterval(interval); // Clear the interval when all lines are displayed
+            setLoginStage(null); // Reset login stage after logout
+          }
+        }, 1200); // Adjust the interval time (500ms per line)
       } else if (lower === "graph") { // Handle the graph command here
         setGraphVisible((prevState) => !prevState); // Toggle graph visibility
         newLines.push(">>> Toggling graph view...");
       } else {
         switch (lower) {
           case "help":
-            newLines.push("Available Commands:");
-            newLines.push("- folder <folder name>");
-            newLines.push("- dossier <dossier name>");
-            newLines.push("- graph");
-            newLines.push("- logout");
-            break;
+          if (loginStage !== "loggedIn") {
+            newLines.push(">>> Authenticate first.");
+          } else {
+            newLines.push(...helpResponses);
+          }
+          break;
           default:
             newLines.push(`> ${cmd}`);
             newLines.push("Unknown command.");
@@ -214,11 +272,7 @@ export default function Terminal() {
         if (loginStage !== "loggedIn") {
           newLines.push(">>> Authenticate first.");
         } else {
-          newLines.push("Available Commands:");
-          newLines.push("- folder <folder name>");
-          newLines.push("- dossier <dossier name>");
-          newLines.push("- graph");
-          newLines.push("- logout");
+          newLines.push(...helpResponses);
         }
         break;
       default:
@@ -230,13 +284,18 @@ export default function Terminal() {
   };
 
   return (
-    <div className="crt" style={{ backgroundColor: "black" }}>
+  <div class="crt-plastic">
+    <div className="crt" onClick={handleTerminalClick}>
       {output.map((line, i) => (
         <div key={i}>{line}</div>
       ))}
-      {graphVisible && <Graph nodes={nodes} edges={edges} />}
+      {graphVisible && ( 
+        <div>
+          <Graph nodes={nodes} edges={edges} />
+        </div>
+      )}
       {bootComplete && (
-        <div style={{ display: "flex", alignItems: "center", backgroundColor: "black" }}>
+        <div style={{ display: "flex", alignItems: "center", backgroundColor: "transparent" }}>
           <span>
             {loginStage === "user" && ">>> USER: "}
             {loginStage === "pass" && ">>> PASS: "}
@@ -244,6 +303,7 @@ export default function Terminal() {
             {loginStage === null && "> "}
           </span>
           <input
+          ref={inputRef} // Attach the ref to the input field
             autoFocus
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -262,5 +322,6 @@ export default function Terminal() {
         </div>
       )}
     </div>
+  </div>
   );
 }
