@@ -8,16 +8,20 @@ import shutdownSound from "../assets/shutdown.mp3";
 import "../index.css";
 
 const bootLines = [
-  "(C) 2043 CryoTerm-V [113th-C.L. - Clearance Level BLUE]",
+  "(C) 2043 CryoTerm-V [113th-CryoLegion]",
+  "Kernal: CryoTerm-V 2.0.1 on an ARM Cortex-A53 (64-bit)",
+  "Booting from Hard Drive...",
+  "Using Drive 3. partition 1.",
+  "\n",
   "Initializing system...",
-  "Loading OS Kernel:    █▒▒▒▒▒▒▒▒▒ 5%",
-  "Loading OS Kernel:    ██▒▒▒▒▒▒▒▒ 15%",
-  "Loading OS Kernel:    ███▒▒▒▒▒▒▒ 30%",
-  "Loading OS Kernel:    █████▒▒▒▒▒ 50%",
-  "Loading OS Kernel:    ███████▒▒▒ 70%",
-  "Mounting Data Volume: ████████▒▒ 80%",
-  "Mounting Data Volume: █████████▒ 90%",
-  "Mounting Data Volume: ██████████ 100%",
+  "Loading OS Kernel:    [█▒▒▒▒▒▒▒▒▒] 5%",
+  "Loading OS Kernel:    [██▒▒▒▒▒▒▒▒] 15%",
+  "Loading OS Kernel:    [███▒▒▒▒▒▒▒] 30%",
+  "Loading OS Kernel:    [█████▒▒▒▒▒] 50%",
+  "Loading OS Kernel:    [███████▒▒▒] 70%",
+  "Mounting Data Volume: [████████▒▒] 80%",
+  "Mounting Data Volume: [█████████▒] 90%",
+  "Mounting Data Volume: [██████████] 100%",
   "Boot check complete.",
   "System integrity: OK",
   ">>> Type 'login' to begin authentication."
@@ -79,7 +83,7 @@ export default function Terminal() {
     if (terminalRef.current) {
       terminalRef.current.scrollTo({
         top: terminalRef.current.scrollHeight,
-        behavior: 'smooth', // Smooth scrolling animation
+        behavior: 'smooth !important', // Smooth scrolling animation
       });
     }
   }, [output]); // Trigger auto-scroll whenever `output` changes
