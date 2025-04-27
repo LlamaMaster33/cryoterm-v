@@ -1,3 +1,4 @@
+/* ----------------------------- Root Variables ----------------------------- */
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -13,23 +14,32 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ----------------------------- Global Styles ----------------------------- */
+body {
+  background: black;
+  background-size: cover; /* Ensure the image covers the entire viewport */
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  background: black;
+  color: #7FE8FA;
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  line-height: 1.6;
+  user-select: none;
+  overflow: hidden;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
-}
-
-body {
-  background-size: cover; /* Ensure the image covers the entire viewport */
-  margin: 0;
-}
-
-.crt-plastic {
-  background: #0f0f1a no-repeat center center;
-  background-size: cover; /* Ensure the image covers the entire container */
 }
 
 h1 {
@@ -37,6 +47,7 @@ h1 {
   line-height: 1.1;
 }
 
+/* ----------------------------- Button Styles ----------------------------- */
 button {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -48,14 +59,31 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+/* ------------------------ CRT Plastic Container ------------------------ */
+.crt-plastic {
+  display: flex; /* Use flexbox for centering */
+  flex-direction: column; /* Stack items vertically */
+  justify-content: center; /* Center vertically */
+  align-items: center; /* Center horizontally */
+  background: #0f0f1a no-repeat center center;
+  background-size: cover; /* Ensure the background covers the entire container */
+  height: 100vh; /* Full viewport height */
+  width: 100vw; /* Full viewport width */
+  position: relative; /* For positioning child elements */
+}
+
+
+/* ----------------------------- CRT Screen ----------------------------- */
 .crt {
   background: black; /* Keep the CRT container's background black */
   color: #7FE8FA;
@@ -80,25 +108,27 @@ button:focus-visible {
 }
 
 .crt {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  color: #7FE8FA;
+  text-shadow: 0 0 2px #7FE8FA, 0 0 10px rgba(127, 232, 250, 0.4);
+  padding: 2rem;
+}
+
+/* -------------------------- Hide Scrollbars -------------------------- */
+.crt {
   overflow-y: auto;
-  scrollbar-width: none;  /* Firefox */
-  -ms-overflow-style: none;  /* Internet Explorer */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer */
 }
 
 .crt::-webkit-scrollbar {
-  display: none;  /* Hide scrollbar in Webkit browsers */
+  display: none; /* Hide scrollbar in Webkit browsers */
 }
 
-@keyframes flicker {
-  0% { opacity: 0.98; }
-  100% { opacity: 1; }
-}
-
-body {
-  background: black;
-  margin: 0;
-}
-
+/* ----------------------------- CRT Effects ----------------------------- */
 .crt::before {
   content: "";
   position: absolute;
@@ -106,8 +136,27 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-size: cover; /* Ensure the image covers the entire container */
-  z-index: 1; /* Place it behind the CRT effects */
+  background: url('./assets/Noise-Texture.png'); /* Add noise texture */
+  background-size: 200px 200px;
+  z-index: 1;
+  mix-blend-mode: overlay;
+  opacity: 10%;
+  animation: noise-animation 0.5s infinite; /* Add subtle movement */
+}
+
+.crt::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    transparent,
+    rgba(255, 255, 255, 0.03) 1px,
+    transparent 2px
+  );
+  mix-blend-mode: overlay;
+  z-index: 1;
 }
 
 .crt::after {
@@ -118,9 +167,64 @@ body {
   width: 100%;
   height: 100%;
   background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
-  z-index: 2; /* Place it above the background image */
-  animation: crt-flicker 0.2s infinite; /* Add flicker effect */
-  pointer-events: none; /* Prevent interaction */
+  z-index: 2;
+  animation: crt-flicker 0.2s infinite;
+  pointer-events: none;
+}
+
+/* ---------------------------- Graph Popout ---------------------------- */
+.graph-popout {
+  position: absolute;
+  top: 5%; /* Center vertically within the CRT */
+  left: 5%; /* Add padding from the left */
+  width: 90%; /* Constrain the graph width */
+  height: 90%; /* Constrain the graph height */
+  background: rgba(31, 35, 53, 0.95); /* Semi-transparent dark background */
+  border: 2px solid #7FE8FA; /* Glowing border */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); /* Glow effect */
+  z-index: 3; /* Ensure it appears above the CRT content but below the CRT effect */
+  overflow: hidden; /* Prevent content overflow */
+  display: flex; /* Use flexbox to center the graph */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+}
+
+.graph-popout .close-button {
+  position: absolute;
+  top: 15px; /* Position 15px from the top */
+  right: 15px; /* Position 15px from the right */
+  background: transparent; /* Transparent background */
+  border: none; /* Remove border */
+  color: #7FE8FA; /* Match the CRT theme */
+  font-size: 30px; /* Make the button larger */
+  font-weight: bold; /* Make the button bold */
+  cursor: pointer; /* Change cursor to pointer */
+  z-index: 4; /* Ensure it overlays the graph */
+}
+
+.graph-popout .close-button:hover {
+  color: #414868; /* Change color on hover for better feedback */
+  transform: scale(1.2); /* Slightly enlarge the button on hover */
+  transition: transform 0.2s ease, color 0.2s ease; /* Smooth hover effect */
+}
+
+/* ---------------------------- Glitch Text ---------------------------- */
+.glitch-text {
+  position: relative;
+  display: inline-block;
+  color: #7FE8FA; /* Glowing text color */
+  animation: glitch 1.5s infinite;
+}
+
+/* ----------------------------- Keyframes ----------------------------- */
+@keyframes flicker {
+  0% {
+    opacity: 0.98;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes crt-flicker {
@@ -129,5 +233,50 @@ body {
   }
   50% {
     opacity: 0.95; /* Simulate flicker by reducing opacity */
+  }
+}
+
+@keyframes noise-animation {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-5px, 5px);
+  }
+  50% {
+    transform: translate(5px, -5px);
+  }
+  75% {
+    transform: translate(-5px, -5px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes glitch {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+  20% {
+    opacity: 0.8;
+    transform: translate(-2px, -2px);
+  }
+  40% {
+    opacity: 0.6;
+    transform: translate(2px, 2px);
+  }
+  60% {
+    opacity: 0.4;
+    transform: translate(-1px, 1px);
+  }
+  80% {
+    opacity: 0.2;
+    transform: translate(1px, -1px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0);
   }
 }

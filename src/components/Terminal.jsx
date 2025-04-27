@@ -1,12 +1,23 @@
+//Terminal.jsx
 import { useState, useEffect, useRef } from "react";
+
+// Commands
 import { frequencyNodes, frequencyResponses } from "../commands/FrequencyResponses";
 import { dossierNodes, dossierResponses } from "../commands/DossierResponses";
-import { helpResponses } from "../commands/MiscCommands";
+import { loginCredentials, helpResponses } from "../commands/MiscCommands";
+
+// Components
 import Graph from './Graph';
+import GlitchText from "../assets/Glitchtext";
+
+// Assets
 import startupSound from "../assets/bootup.mp3";
 import shutdownSound from "../assets/shutdown.mp3";
+
+// Styles
 import "../index.css";
 
+/* ----------------------------- Boot Lines ----------------------------- */
 const bootLines = [
   "(C) 2043 CryoTerm-V [113th-C.L. - Clearance Level BLUE]",
   "Initializing system...",
@@ -23,6 +34,7 @@ const bootLines = [
   ">>> Type 'login' to begin authentication."
 ];
 
+/* ----------------------------- Logout Lines ----------------------------- */
 const logoutLines = [
   "(C) 2043 CryoTerm-V",
   ">>> Logging out...",
@@ -30,12 +42,7 @@ const logoutLines = [
   ">>> Type 'login' to begin authentication."
 ];
 
-const loginCredentials = {
-  "Ghostpaw": "ScrewtheSrs",
-  "erza": "Warrior123",
-  "1": "1",
-};
-
+/* ----------------------------- Base Nodes ----------------------------- */
 const baseNodes = [
   { id: "Ghostpaw - Central Archive", label: "Ghostpaw - Central Archive" },
   { id: "Cryo-Chamber Grid", label: "Cryo-Chamber Grid" },
@@ -43,9 +50,10 @@ const baseNodes = [
   { id: "Commander Ezra", label: "Commander Ezra" },
   { id: "Dossier Compilation", label: "Dossier Compilation" }, // New folder
   { id: "VOICE LOG ARCHIVE", label: "VOICE LOG ARCHIVE" }, // New folder
-  { id: "Frequency 666.0", label: "Frequency 666.0" }, // New folder
+  { id: "Frequency 666.0", label: "Frequency 666.0" } // New folder
 ];
 
+/* ----------------------------- Graph Edges ----------------------------- */
 const edges = [
   { from: "Ghostpaw - Central Archive", to: "Cryo-Chamber Grid" },
   { from: "Ghostpaw - Central Archive", to: "Dossier Compilation" },
@@ -53,20 +61,25 @@ const edges = [
   { from: "Dossier Compilation", to: "Commander Ezra" }
 ];
 
+/* ----------------------------- Terminal Component ----------------------------- */
 export default function Terminal() {
+  // State variables
   const [output, setOutput] = useState([]);
   const [bootIndex, setBootIndex] = useState(0);
   const [bootComplete, setBootComplete] = useState(false);
   const [input, setInput] = useState("");
   const [loginStage, setLoginStage] = useState(null);
   const [tempUser, setTempUser] = useState("");
+  const [isTypingDisabled, setIsTypingDisabled] = useState(false); // Disable typing state
   const [graphVisible, setGraphVisible] = useState(false); // New state for graph visibility
   const [discoveredFrequencies, setDiscoveredFrequencies] = useState([]); // Track scanned frequencies
   const [openFolder, setOpenFolder] = useState(null); // Track the currently open folder
   const [scannedFolders, setScannedFolders] = useState([]); // Track scanned folders
-  const inputRef = useRef(null); // Create a ref for the input field
+  const [commandHistory, setCommandHistory] = useState([]); // Store past commands
+  const [historyIndex, setHistoryIndex] = useState(-1); // Track the current position in history
 
-  
+  // Refs
+  const inputRef = useRef(null); // Create a ref for the input field
   const terminalRef = useRef(null); // Ref for terminal div
 
   const nodes = [
@@ -83,7 +96,7 @@ export default function Terminal() {
       });
     }
   }, [output]); // Trigger auto-scroll whenever `output` changes
-  
+
   useEffect(() => {
     const audio = new Audio(startupSound);
     audio.volume = 0.3;
@@ -105,28 +118,43 @@ export default function Terminal() {
 
   const handleInput = (e) => {
     if (e.key === "Enter") {
-      const userInput = input.trim().toLowerCase();
-
-      if (userInput === "graph") {
-        setGraphVisible((prevState) => !prevState); // Toggle graph visibility
-        setOutput((prev) => [...prev, ">>> Toggling graph view..."]);
-      } else {
+      const userInput = input.trim();
+      if (userInput) {
+        setCommandHistory((prev) => [...prev, userInput]); // Add command to history
+        setHistoryIndex(-1); // Reset history index
         processCommand(userInput);
       }
-
       setInput(""); // Clear input field
+    } else if (e.key === "ArrowUp") {
+      // Navigate up in history
+      if (historyIndex < commandHistory.length - 1) {
+        const newIndex = historyIndex + 1;
+        setHistoryIndex(newIndex);
+        setInput(commandHistory[commandHistory.length - 1 - newIndex]); // Get the command from history
+      }
+    } else if (e.key === "ArrowDown") {
+      // Navigate down in history
+      if (historyIndex > 0) {
+        const newIndex = historyIndex - 1;
+        setHistoryIndex(newIndex);
+        setInput(commandHistory[commandHistory.length - 1 - newIndex]); // Get the command from history
+      } else {
+        setHistoryIndex(-1);
+        setInput(""); // Clear input if at the bottom of history
+      }
     }
   };
 
   const handleTerminalClick = () => {
     if (inputRef.current) {
-      inputRef.current.focus(); // Progr  ammatically focus the input field
+      inputRef.current.focus(); // Programmatically focus the input field
     }
   };
 
   const processCommand = (cmd) => {
     const lower = cmd.toLowerCase();
     let newLines = [];
+    setOutput((prev) => [...prev, `> ${cmd}`, "Command executed."]);
   
     if (loginStage === "user") {
       setTempUser(lower); // Store the username in lowercase
@@ -224,12 +252,12 @@ export default function Terminal() {
           newLines.push(`>>> Frequency ${frequency} not found.`);
         }
       } else if (lower === "logout") {
-        const audio = new Audio(shutdownSound); // Create a new Audio instance
-        audio.volume = 0.3; // Set the volume (optional)
-        audio.play(); // Play the logout sound
-
-          let logoutIndex = -1;
-
+        const audio = new Audio(shutdownSound); // Play the logout sound
+        audio.volume = 0.3;
+        audio.play();
+      
+        let logoutIndex = 0;
+      
         const interval = setInterval(() => {
           if (logoutIndex < logoutLines.length) {
             setOutput((prev) => [...prev, logoutLines[logoutIndex]]);
@@ -237,8 +265,15 @@ export default function Terminal() {
           } else {
             clearInterval(interval); // Clear the interval when all lines are displayed
             setLoginStage(null); // Reset login stage after logout
+      
+            // Disable typing and clear the terminal after 8 seconds
+            setIsTypingDisabled(true); // Disable typing
+            setTimeout(() => {
+              setOutput(["(C) 2043 CryoTerm-V [113th-C.L. - Clearance Level BLUE]\n>>> Type 'login' to begin authentication."]); // Display login message
+              setIsTypingDisabled(false); // Re-enable typing
+            }, 8000); // 8-second delay
           }
-        }, 1200); // Adjust the interval time (500ms per line)
+        }, 1200); // Adjust the interval time (1200ms per line)
       } else if (lower === "graph") { // Handle the graph command here
         setGraphVisible((prevState) => !prevState); // Toggle graph visibility
         newLines.push(">>> Toggling graph view...");
@@ -287,10 +322,18 @@ export default function Terminal() {
   <div class="crt-plastic">
     <div className="crt" onClick={handleTerminalClick}>
       {output.map((line, i) => (
-        <div key={i}>{line}</div>
+        <div key={i}>
+          {typeof line === "string" ? line : <GlitchText text={line} />}
+        </div>
       ))}
-      {graphVisible && ( 
-        <div>
+      {graphVisible && (
+        <div className="graph-popout">
+          <button
+            className="close-button"
+            onClick={() => setGraphVisible(false)} // Close the graph view
+          >
+            ✕
+          </button>
           <Graph nodes={nodes} edges={edges} />
         </div>
       )}
@@ -303,20 +346,23 @@ export default function Terminal() {
             {loginStage === null && "> "}
           </span>
           <input
-          ref={inputRef} // Attach the ref to the input field
+            ref={inputRef}
             autoFocus
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleInput}
+            disabled={isTypingDisabled} // Disable input when typing is not allowed
             style={{
-              background: "transparent", // Make the background transparent
+              background: "transparent",
               border: "none",
               outline: "none",
               color: "#7FE8FA",
               fontFamily: "VT323, monospace",
               fontSize: "18px",
-              caretColor: "#7FE8FA", // Ensure the caret matches the glowing text
+              caretColor: "#7FE8FA",
               flex: 1,
+              opacity: isTypingDisabled ? 0.5 : 1, // Dim the input field when disabled
+              cursor: isTypingDisabled ? "not-allowed" : "text", // Change cursor when disabled
             }}
           />
         </div>
