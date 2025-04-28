@@ -1,4 +1,6 @@
 // This file contains the dossier nodes and responses for the terminal.
+import React from "react";
+import GlitchText from "../assets/Glitchtext";
 
 /* ----------------------------- Dossier Nodes ----------------------------- */
 export const dossierNodes = {

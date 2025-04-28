@@ -31,11 +31,11 @@ function App() {
   return (
     <div style={{ height: "100vh", backgroundColor: "black", color: "white" }}>
       <div style={{ paddingRight: showGraph ? "28%" : 0, height: "100%", backgroundColor: "black" }}>
-        <Terminal
-          onCommand={handleCommand}
-          terminalOutput={terminalOutput}
-          appendToTerminal={appendToTerminal}
-        />
+          <Terminal
+            onCommand={handleCommand}
+            terminalOutput={terminalOutput}
+            appendToTerminal={appendToTerminal}
+          />
       </div>
 
       {showGraph && (

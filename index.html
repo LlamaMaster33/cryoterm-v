@@ -8,6 +8,12 @@
     <title>CryoTerm-V</title>
   </head>
   <body>
+    <svg style="display:none;">
+      <filter id="crt-distortion">
+        <feTurbulence type="turbulence" baseFrequency="0.01" numOctaves="3" result="warp"/>
+        <feDisplacementMap in="SourceGraphic" in2="warp" scale="8" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </svg>    
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

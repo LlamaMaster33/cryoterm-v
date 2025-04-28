@@ -132,31 +132,23 @@ button:focus-visible {
 .crt::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url('./assets/Noise-Texture.png'); /* Add noise texture */
-  background-size: 200px 200px;
+  inset: 0;
+  background: url('./assets/Noise-Texture.png') repeat; /* Add noise texture */
+  opacity: 0.08; 
+  mix-blend-mode: multiply; /* merges noise with video signal */
+  pointer-events: none;
   z-index: 1;
-  mix-blend-mode: overlay;
-  opacity: 10%;
-  animation: noise-animation 0.5s infinite; /* Add subtle movement */
 }
 
 .crt::before {
   content: "";
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  inset: 0;
+  background:
+    repeating-radial-gradient(circle, transparent 0%, transparent 5%, rgba(255,255,255,0.02) 6%),
+    repeating-linear-gradient(180deg, transparent, transparent 1px, rgba(0,0,0,0.1) 2px);
   pointer-events: none;
-  background: repeating-linear-gradient(
-    transparent,
-    rgba(255, 255, 255, 0.03) 1px,
-    transparent 2px
-  );
   mix-blend-mode: overlay;
-  z-index: 1;
 }
 
 .crt::after {
@@ -171,6 +163,8 @@ button:focus-visible {
   animation: crt-flicker 0.2s infinite;
   pointer-events: none;
 }
+
+
 
 /* ---------------------------- Graph Popout ---------------------------- */
 .graph-popout {
@@ -255,28 +249,10 @@ button:focus-visible {
 }
 
 @keyframes glitch {
-  0% {
-    opacity: 1;
-    transform: translate(0, 0);
-  }
-  20% {
-    opacity: 0.8;
-    transform: translate(-2px, -2px);
-  }
-  40% {
-    opacity: 0.6;
-    transform: translate(2px, 2px);
-  }
-  60% {
-    opacity: 0.4;
-    transform: translate(-1px, 1px);
-  }
-  80% {
-    opacity: 0.2;
-    transform: translate(1px, -1px);
-  }
-  100% {
-    opacity: 1;
-    transform: translate(0, 0);
-  }
+  0%,100% { opacity:1; transform: translate(0, 0); }
+  20%      { opacity:0.8; transform: translate(-1px, -1px); }
+  40%      { opacity:0.6; transform: translate(1px, 1px); }
+  60%      { opacity:0.4; transform: translate(-1px, 1px); }
+  80%      { opacity:0.7; transform: translate(1px, -1px); }
 }
+.glitch-text { animation: glitch 1.5s infinite; }
