@@ -1,12 +1,19 @@
+/* ----------------------------- Imports ----------------------------- */
 import React, { useState } from "react";
 import Terminal from "./components/Terminal";
 import Graph from "./components/Graph";
 
+/* ----------------------------- Constants ----------------------------- */
+const MAX_LINES = 30;
+
+/* ----------------------------- App Component ----------------------------- */
 function App() {
+  
+  /* ----------------------------- State Variables ----------------------------- */
   const [terminalOutput, setTerminalOutput] = useState([]);
   const [showGraph, setShowGraph] = useState(false);
-  const MAX_LINES = 30;
 
+  /* ----------------------------- Helper Functions ----------------------------- */
   const appendToTerminal = (text) => {
     setTerminalOutput((prev) => {
       const newOutput = [...prev, text];
@@ -14,7 +21,7 @@ function App() {
         ? newOutput.slice(newOutput.length - MAX_LINES)
         : newOutput;
     });
-};
+  };
 
   const handleCommand = (cmd) => {
     const trimmed = cmd.trim();
@@ -28,16 +35,25 @@ function App() {
     appendToTerminal(`Running command: ${trimmed}`);
   };
 
+  /* ----------------------------- Render ----------------------------- */
   return (
     <div style={{ height: "100vh", backgroundColor: "black", color: "white" }}>
-      <div style={{ paddingRight: showGraph ? "28%" : 0, height: "100%", backgroundColor: "black" }}>
-          <Terminal
-            onCommand={handleCommand}
-            terminalOutput={terminalOutput}
-            appendToTerminal={appendToTerminal}
-          />
+      {/* ----------------------------- Terminal Section ----------------------------- */}
+      <div
+        style={{
+          paddingRight: showGraph ? "28%" : 0,
+          height: "100%",
+          backgroundColor: "black",
+        }}
+      >
+        <Terminal
+          onCommand={handleCommand}
+          terminalOutput={terminalOutput}
+          appendToTerminal={appendToTerminal}
+        />
       </div>
 
+      {/* ----------------------------- Graph Section ----------------------------- */}
       {showGraph && (
         <div
           style={{
@@ -48,7 +64,7 @@ function App() {
             height: "100%",
             backgroundColor: "black",
             borderLeft: "1px solid #333",
-            zIndex: 1000
+            zIndex: 1000,
           }}
         >
           <Graph
@@ -63,4 +79,5 @@ function App() {
   );
 }
 
+/* ----------------------------- Export ----------------------------- */
 export default App;

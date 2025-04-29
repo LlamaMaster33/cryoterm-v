@@ -85,36 +85,32 @@ button:focus-visible {
 
 /* ----------------------------- CRT Screen ----------------------------- */
 .crt {
-  background: black; /* Keep the CRT container's background black */
+  position: relative;
+  width: 90%; /* Adjust width to fit the screen */
+  height: 80vh; /* Adjust height to fit the screen */
+  margin: 5vh auto; /* Center the CRT vertically and horizontally */
+  background: radial-gradient(circle, #000000 60%, #0a0a0a 100%); /* Subtle gradient for depth */
+  border-radius: 20px; /* Add curvature to the corners */
+  overflow: hidden; /* Ensure content stays within the curved area */
+  box-shadow: 
+    0 0 30px rgba(0, 255, 255, 0.3), /* Outer glow effect */
+    inset 0 0 50px rgba(0, 0, 0, 0.8); /* Inner shadow for depth */
+  z-index: 1; /* Ensure it stays below the CRT effects */
   color: #7FE8FA;
   font-family: 'VT323', monospace;
   font-size: 18px;
   padding: 1rem;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden; /* Prevent scrollbars */
+  overflow-y: auto; /* Allow vertical scrolling */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer */
   white-space: pre-wrap; /* Ensure text wraps to the next line */
   word-wrap: break-word; /* Break long words to prevent overflow */
   overflow-wrap: break-word; /* Ensure text wraps properly */
-  position: relative;
   text-shadow: 0 0 5px #7FE8FA, 0 0 10px #7FE8FA, 0 0 20px #7FE8FA;
   animation: flicker 0.15s infinite alternate;
-  border-radius: 15px; /* Simulate curved screen */
-  box-shadow: inset 0 0 50px rgba(0, 255, 255, 0.1), 0 0 30px rgba(0, 255, 255, 0.5);
   box-sizing: border-box; /* Include padding and borders in width/height */
   max-width: 90%; /* Constrain the text area to 90% of the container width */
   max-height: 90%; /* Constrain the text area to 90% of the container height */
-  margin: 0 auto; /* Center the text area horizontally */
-}
-
-.crt {
-  position: relative;
-  width: 100vw;
-  height: 100vh;
-  background: black;
-  color: #7FE8FA;
-  text-shadow: 0 0 2px #7FE8FA, 0 0 10px rgba(127, 232, 250, 0.4);
-  padding: 2rem;
 }
 
 /* -------------------------- Hide Scrollbars -------------------------- */
@@ -129,15 +125,20 @@ button:focus-visible {
 }
 
 /* ----------------------------- CRT Effects ----------------------------- */
+
 .crt::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: url('./assets/Noise-Texture.png') repeat; /* Add noise texture */
-  opacity: 0.08; 
-  mix-blend-mode: multiply; /* merges noise with video signal */
+  background: 
+    url('./assets/Noise-Texture.png') repeat,
+    repeating-radial-gradient(circle, transparent 0%, transparent 5%, rgba(255,255,255,0.02) 6%),
+    repeating-linear-gradient(180deg, transparent, transparent 1px, rgba(0,0,0,0.1) 2px);
+  opacity: 0.08;
+  mix-blend-mode: multiply;
   pointer-events: none;
-  z-index: 1;
+  /* z-index: 1; */
+  animation: noise-animation 0.5s infinite;
 }
 
 .crt::before {
@@ -159,23 +160,23 @@ button:focus-visible {
   width: 100%;
   height: 100%;
   background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
-  z-index: 2;
+  z-index: 9999; /* Raise z-index to ensure it is above everything else */
   animation: crt-flicker 0.2s infinite;
-  pointer-events: none;
+  pointer-events: none; /* Ensure it doesn't block interactions */
 }
-
-
 
 /* ---------------------------- Graph Popout ---------------------------- */
 .graph-popout {
-  position: absolute;
-  top: 5%; /* Center vertically within the CRT */
-  left: 5%; /* Add padding from the left */
-  width: 90%; /* Constrain the graph width */
-  height: 90%; /* Constrain the graph height */
+  position: fixed; /* Fixed to stay in the viewport */
+  top: 50%; /* Position the top edge at 50% of the viewport height */
+  left: 50%; /* Position the left edge at 50% of the viewport width */
+  transform: translate(-50%, -50%); /* Center the element by shifting it back by half its width and height */
+  width: 81%; /* Constrain the graph width */
+  height: 81%; /* Constrain the graph height */
   background: rgba(31, 35, 53, 0.95); /* Semi-transparent dark background */
   border: 2px solid #7FE8FA; /* Glowing border */
   border-radius: 10px; /* Rounded corners */
+  box-sizing: border-box; /* Include padding and borders in width/height */
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); /* Glow effect */
   z-index: 3; /* Ensure it appears above the CRT content but below the CRT effect */
   overflow: hidden; /* Prevent content overflow */
@@ -256,3 +257,21 @@ button:focus-visible {
   80%      { opacity:0.7; transform: translate(1px, -1px); }
 }
 .glitch-text { animation: glitch 1.5s infinite; }
+
+@keyframes noise-animation {
+  0% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-5px, 5px);
+  }
+  50% {
+    transform: translate(5px, -5px);
+  }
+  75% {
+    transform: translate(-5px, -5px);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}

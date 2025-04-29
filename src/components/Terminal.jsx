@@ -19,7 +19,7 @@ import "../index.css";
 
 /* ----------------------------- Boot Lines ----------------------------- */
 const bootLines = [
-  "(C) 2043 CryoTerm-V [113th-CryoLegion]",
+  "(C) 2043 CryoTerm-V [113th-CryoLancers]",
   "Kernal: CryoTerm-V 2.0.1 on an ARM Cortex-A53 (64-bit)",
   "Booting from Hard Drive...",
   "Using Drive 3. partition 1.",
