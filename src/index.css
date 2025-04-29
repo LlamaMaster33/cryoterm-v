@@ -16,12 +16,6 @@
 
 /* ----------------------------- Global Styles ----------------------------- */
 body {
-  background: black;
-  background-size: cover; /* Ensure the image covers the entire viewport */
-  margin: 0;
-}
-
-body {
   margin: 0;
   background: black;
   color: #7FE8FA;
@@ -71,46 +65,45 @@ button:focus-visible {
 
 /* ------------------------ CRT Plastic Container ------------------------ */
 .crt-plastic {
-  display: flex; /* Use flexbox for centering */
-  flex-direction: column; /* Stack items vertically */
-  justify-content: center; /* Center vertically */
-  align-items: center; /* Center horizontally */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   background: #0f0f1a no-repeat center center;
-  background-size: cover; /* Ensure the background covers the entire container */
-  height: 100vh; /* Full viewport height */
-  width: 100vw; /* Full viewport width */
-  position: relative; /* For positioning child elements */
+  background-size: cover;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
 }
-
 
 /* ----------------------------- CRT Screen ----------------------------- */
 .crt {
   position: relative;
-  width: 90%; /* Adjust width to fit the screen */
-  height: 80vh; /* Adjust height to fit the screen */
-  margin: 5vh auto; /* Center the CRT vertically and horizontally */
-  background: radial-gradient(circle, #000000 60%, #0a0a0a 100%); /* Subtle gradient for depth */
-  border-radius: 20px; /* Add curvature to the corners */
-  overflow: hidden; /* Ensure content stays within the curved area */
+  width: 90%;
+  height: 80vh;
+  margin: 5vh auto;
+  background: radial-gradient(circle, #000000 60%, #0a0a0a 100%);
+  border-radius: 20px;
+  overflow: hidden;
   box-shadow: 
-    0 0 30px rgba(0, 255, 255, 0.3), /* Outer glow effect */
-    inset 0 0 50px rgba(0, 0, 0, 0.8); /* Inner shadow for depth */
-  z-index: 1; /* Ensure it stays below the CRT effects */
+    0 0 30px rgba(0, 255, 255, 0.3),
+    inset 0 0 50px rgba(0, 0, 0, 0.8);
+  z-index: 1;
   color: #7FE8FA;
   font-family: 'VT323', monospace;
   font-size: 18px;
   padding: 1rem;
-  overflow-y: auto; /* Allow vertical scrolling */
+  overflow-y: auto;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* Internet Explorer */
-  white-space: pre-wrap; /* Ensure text wraps to the next line */
-  word-wrap: break-word; /* Break long words to prevent overflow */
-  overflow-wrap: break-word; /* Ensure text wraps properly */
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   text-shadow: 0 0 5px #7FE8FA, 0 0 10px #7FE8FA, 0 0 20px #7FE8FA;
   animation: flicker 0.15s infinite alternate;
-  box-sizing: border-box; /* Include padding and borders in width/height */
-  max-width: 90%; /* Constrain the text area to 90% of the container width */
-  max-height: 90%; /* Constrain the text area to 90% of the container height */
+  box-sizing: border-box;
+  max-width: 90%;
+  max-height: 90%;
 }
 
 /* -------------------------- Hide Scrollbars -------------------------- */
@@ -134,22 +127,11 @@ button:focus-visible {
     url('./assets/Noise-Texture.png') repeat,
     repeating-radial-gradient(circle, transparent 0%, transparent 5%, rgba(255,255,255,0.02) 6%),
     repeating-linear-gradient(180deg, transparent, transparent 1px, rgba(0,0,0,0.1) 2px);
-  opacity: 0.08;
-  mix-blend-mode: multiply;
-  pointer-events: none;
-  /* z-index: 1; */
-  animation: noise-animation 0.5s infinite;
-}
-
-.crt::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    repeating-radial-gradient(circle, transparent 0%, transparent 5%, rgba(255,255,255,0.02) 6%),
-    repeating-linear-gradient(180deg, transparent, transparent 1px, rgba(0,0,0,0.1) 2px);
-  pointer-events: none;
+  opacity: 8%;
   mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 999;
+  animation: noise-animation 0.5s infinite;
 }
 
 .crt::after {
@@ -159,56 +141,56 @@ button:focus-visible {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
-  z-index: 9999; /* Raise z-index to ensure it is above everything else */
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
+  z-index: 9999;
   animation: crt-flicker 0.2s infinite;
-  pointer-events: none; /* Ensure it doesn't block interactions */
+  pointer-events: none;
 }
 
 /* ---------------------------- Graph Popout ---------------------------- */
 .graph-popout {
-  position: fixed; /* Fixed to stay in the viewport */
-  top: 50%; /* Position the top edge at 50% of the viewport height */
-  left: 50%; /* Position the left edge at 50% of the viewport width */
-  transform: translate(-50%, -50%); /* Center the element by shifting it back by half its width and height */
-  width: 81%; /* Constrain the graph width */
-  height: 81%; /* Constrain the graph height */
-  background: rgba(31, 35, 53, 0.95); /* Semi-transparent dark background */
-  border: 2px solid #7FE8FA; /* Glowing border */
-  border-radius: 10px; /* Rounded corners */
-  box-sizing: border-box; /* Include padding and borders in width/height */
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); /* Glow effect */
-  z-index: 3; /* Ensure it appears above the CRT content but below the CRT effect */
-  overflow: hidden; /* Prevent content overflow */
-  display: flex; /* Use flexbox to center the graph */
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 81%;
+  height: 81%;
+  background: rgba(31, 35, 53, 0.95);
+  border: 2px solid #7FE8FA;
+  border-radius: 10px;
+  box-sizing: border-box;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  z-index: 3;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .graph-popout .close-button {
   position: absolute;
-  top: 15px; /* Position 15px from the top */
-  right: 15px; /* Position 15px from the right */
-  background: transparent; /* Transparent background */
-  border: none; /* Remove border */
-  color: #7FE8FA; /* Match the CRT theme */
-  font-size: 30px; /* Make the button larger */
-  font-weight: bold; /* Make the button bold */
-  cursor: pointer; /* Change cursor to pointer */
-  z-index: 4; /* Ensure it overlays the graph */
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  color: #7FE8FA;
+  font-size: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 4;
 }
 
 .graph-popout .close-button:hover {
-  color: #414868; /* Change color on hover for better feedback */
-  transform: scale(1.2); /* Slightly enlarge the button on hover */
-  transition: transform 0.2s ease, color 0.2s ease; /* Smooth hover effect */
+  color: #414868;
+  transform: scale(1.2);
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
 /* ---------------------------- Glitch Text ---------------------------- */
 .glitch-text {
   position: relative;
   display: inline-block;
-  color: #7FE8FA; /* Glowing text color */
+  color: #7FE8FA;
   animation: glitch 1.5s infinite;
 }
 
@@ -227,7 +209,7 @@ button:focus-visible {
     opacity: 1;
   }
   50% {
-    opacity: 0.95; /* Simulate flicker by reducing opacity */
+    opacity: 0.95;
   }
 }
 
@@ -250,28 +232,24 @@ button:focus-visible {
 }
 
 @keyframes glitch {
-  0%,100% { opacity:1; transform: translate(0, 0); }
-  20%      { opacity:0.8; transform: translate(-1px, -1px); }
-  40%      { opacity:0.6; transform: translate(1px, 1px); }
-  60%      { opacity:0.4; transform: translate(-1px, 1px); }
-  80%      { opacity:0.7; transform: translate(1px, -1px); }
-}
-.glitch-text { animation: glitch 1.5s infinite; }
-
-@keyframes noise-animation {
-  0% {
+  0%, 100% {
+    opacity: 1;
     transform: translate(0, 0);
   }
-  25% {
-    transform: translate(-5px, 5px);
+  20% {
+    opacity: 0.8;
+    transform: translate(-1px, -1px);
   }
-  50% {
-    transform: translate(5px, -5px);
+  40% {
+    opacity: 0.6;
+    transform: translate(1px, 1px);
   }
-  75% {
-    transform: translate(-5px, -5px);
+  60% {
+    opacity: 0.4;
+    transform: translate(-1px, 1px);
   }
-  100% {
-    transform: translate(0, 0);
+  80% {
+    opacity: 0.7;
+    transform: translate(1px, -1px);
   }
 }
